@@ -1,5 +1,5 @@
 {
-  "name": "Eye Test Challenge",
-  "description": "A gamified visual and brain challenge application testing focus, contrast sensitivity, and memory. Note: This is a game, not a medical diagnostic tool.",
+  "name": "ProperBody",
+  "description": "Your personal body checkup companion. Test your vision, hearing, reflexes, and breath capacity.",
   "requestFramePermissions": []
 }

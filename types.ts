@@ -1,58 +1,131 @@
-export enum GameScreen {
-  SPLASH = 'SPLASH',
+export enum AppScreen {
+  ONBOARDING = 'ONBOARDING',
+  DASHBOARD = 'DASHBOARD',
+  MODULE_DETAIL = 'MODULE_DETAIL',
+  LEVEL_SELECT = 'LEVEL_SELECT',
+  TEST_ACTIVE = 'TEST_ACTIVE',
+}
+
+export enum Tab {
   HOME = 'HOME',
-  GAMEPLAY = 'GAMEPLAY',
-  RESULT = 'RESULT',
+  HISTORY = 'HISTORY',
   SETTINGS = 'SETTINGS'
 }
 
-export enum ChallengeType {
-  BASIC = 'BASIC',         // Part 1: High Contrast
-  CONTRAST = 'CONTRAST',   // Part 2: Low Contrast
-  BLUR = 'BLUR',           // Part 3: Focus
-  DOTS = 'DOTS',           // Part 4: Color perception (Ishihara-like)
-  PATTERN = 'PATTERN',     // Part 5: Confusion
-  MEMORY = 'MEMORY',       // Part 6: Flash memory
-  ILLUSION = 'ILLUSION'    // Part 7: Optical Illusion
+export enum TestCategory {
+  VISION = 'VISION',
+  HEARING = 'HEARING',
+  BREATH = 'BREATH',
+  REFLEX = 'REFLEX',
+  MEMORY = 'MEMORY'
 }
 
-export interface LevelConfig {
-  id: string;
-  part: number;
-  level: number;
-  type: ChallengeType;
-  answer: string; // Default answer, but overridden in gameplay
-  difficulty: number; // 0 to 1 scale
-  timeLimit?: number; // Optional custom time limit
+export enum SubTestType {
+  // Vision Types
+  VIS_ACUITY = 'VIS_ACUITY',
+  VIS_CONTRAST = 'VIS_CONTRAST',
+  VIS_COLOR = 'VIS_COLOR',
+  VIS_FOCUS = 'VIS_FOCUS',
+  VIS_PATTERN = 'VIS_PATTERN',
+  VIS_SPEED = 'VIS_SPEED',
+  VIS_NOISE = 'VIS_NOISE',
+  VIS_GHOSTING = 'VIS_GHOSTING',
+  VIS_CROWDING = 'VIS_CROWDING',
+  VIS_GLARE = 'VIS_GLARE',
+  
+  // Hearing Types
+  HEARING_FREQ = 'HEARING_FREQ',
+  HEARING_VOLUME = 'HEARING_VOLUME',
+  HEARING_PITCH = 'HEARING_PITCH',
+  HEARING_STEREO = 'HEARING_STEREO',
+  HEARING_RHYTHM = 'HEARING_RHYTHM',
+  HEARING_NOISE = 'HEARING_NOISE',
+  HEARING_MEMORY = 'HEARING_MEMORY',
+
+  // Breath Types (10)
+  BREATH_HOLD = 'BREATH_HOLD',
+  BREATH_RHYTHM = 'BREATH_RHYTHM', // 4-7-8
+  BREATH_EXHALE = 'BREATH_EXHALE', // Sustained control
+  BREATH_SQUARE = 'BREATH_SQUARE', // Box breathing
+  BREATH_DEEP = 'BREATH_DEEP', // Capacity (Simulated)
+  BREATH_COUNT = 'BREATH_COUNT', // Counting cadence
+  BREATH_TIMING = 'BREATH_TIMING', // Time perception 
+  BREATH_STAMINA = 'BREATH_STAMINA', // Fast rhythm
+  BREATH_COHERENCE = 'BREATH_COHERENCE', // Heart coherence
+  BREATH_POWER = 'BREATH_POWER', // Burst speed
+
+  // Reflex Types (10)
+  REFLEX_VISUAL = 'REFLEX_VISUAL',
+  REFLEX_AUDIO = 'REFLEX_AUDIO',
+  REFLEX_CHOICE = 'REFLEX_CHOICE', // Red vs Green
+  REFLEX_GRID = 'REFLEX_GRID', // Whack-a-mole
+  REFLEX_SEQUENCE = 'REFLEX_SEQUENCE', // 1-2-3
+  REFLEX_MOVING = 'REFLEX_MOVING', // Catch moving ball
+  REFLEX_STOP = 'REFLEX_STOP', // Release on stop
+  REFLEX_MATH = 'REFLEX_MATH', // Quick math
+  REFLEX_COLOR = 'REFLEX_COLOR', // Color text match
+  REFLEX_SHAKE = 'REFLEX_SHAKE', // Shake/Tap reaction
+
+  // Memory Types (10)
+  MEM_SEQUENCE = 'MEM_SEQUENCE', // Simon Visual
+  MEM_AUDIO = 'MEM_AUDIO', // Simon Audio
+  MEM_NUMBERS = 'MEM_NUMBERS', // Digit span
+  MEM_POSITIONS = 'MEM_POSITIONS', // Spatial span
+  MEM_PAIRS = 'MEM_PAIRS', // Card match
+  MEM_COLORS = 'MEM_COLORS', // Color sequence
+  MEM_SHAPES = 'MEM_SHAPES', // Shape recall
+  MEM_PATH = 'MEM_PATH', // Grid path
+  MEM_NBACK = 'MEM_NBACK', // N-Back
+  MEM_WORDS = 'MEM_WORDS', // Word recall
 }
 
-export interface UserProgress {
-  currentPart: number;
-  currentLevel: number; // Within the part (1-7)
-  unlockedLevels: string[]; // List of Level IDs
+export interface GameLevel {
+  id: number; // 1-50
+  difficulty: number; // 0.0 to 1.0
+  target: any; // Context specific (e.g., time to beat, text length)
+}
+
+export interface SubModule {
+  id: SubTestType;
+  title: string;
+  description: string;
+  icon: string;
+  levels: GameLevel[];
+}
+
+export interface TestModule {
+  id: TestCategory;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  gradient: string;
+  subModules: SubModule[];
+}
+
+export interface LevelResult {
+  score: number; // 0-10
+  stars: number; // 1-3
+  date: number;
+}
+
+// Map: ModuleID -> SubModuleID -> LevelID -> Result
+export interface UserProgressMap {
+  [moduleId: string]: {
+    [subId: string]: {
+      [levelId: number]: LevelResult
+    }
+  }
+}
+
+export interface UserData {
+  onboardingComplete: boolean;
+  progress: UserProgressMap;
   totalScore: number;
-  scores: Record<string, number>; // LevelID -> Score
-  bestScore: number;
+  settings: {
+    darkMode: boolean;
+    soundEnabled: boolean;
+  };
 }
 
-export interface GameSettings {
-  darkMode: boolean;
-  language: 'en' | 'hi';
-  soundEnabled: boolean;
-}
-
-export const TOTAL_PARTS = 7;
-export const LEVELS_PER_PART = 7;
-
-// NEW SCORING SYSTEM
-export const SCORE_MAX = 100;       // Start with 100
-export const SCORE_REFRESH = -2;    // Penalty for getting a new image
-export const SCORE_HINT = -10;      // Penalty for hint
-export const SCORE_WRONG = -10;     // Penalty for wrong guess
-export const SCORE_MIN = 10;        // Minimum points if completed
-
-export const VISION_CATEGORIES = {
-  EXCELLENT: 'God Vision',
-  AVERAGE: 'Normal Vision',
-  WEAK: 'Needs Training'
-};
+export const SCORE_MAX = 10;
